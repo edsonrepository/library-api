@@ -16,8 +16,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith( SpringExtension.class )
-@ActiveProfiles( "test" )
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 public class BookServiceTest {
 
     BookService service;
@@ -27,57 +27,57 @@ public class BookServiceTest {
 
     @BeforeEach
     public void setUp() {
-        this.service = new BookServiceImpl( repository );
+        this.service = new BookServiceImpl(repository);
     }
 
     @Test
-    @DisplayName( "Deve salvar um livro." )
+    @DisplayName("Deve salvar um livro.")
     public void saveBookTest() {
         //cenario
         Book book = createValidBook();
-        Mockito.when( repository.existsByIsbn( Mockito.anyString() ) ).thenReturn( false );
-        Mockito.when( repository.save( book ) )
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(false);
+        Mockito.when(repository.save(book))
                 .thenReturn(
                         Book.builder()
-                                .id( 1L )
-                                .isbn( "123" )
-                                .title( "As aventuras" )
-                                .author( "Fulano" )
+                                .id(1L)
+                                .isbn("123")
+                                .title("As aventuras")
+                                .author("Fulano")
                                 .build()
                 );
 
         //execucao
-        Book savedBook = service.save( book );
+        Book savedBook = service.save(book);
 
         //verificacao
-        assertThat( savedBook.getId() ).isNotNull();
-        assertThat( savedBook.getIsbn() ).isEqualTo( "123" );
-        assertThat( savedBook.getTitle() ).isEqualTo( "As aventuras" );
-        assertThat( savedBook.getAuthor() ).isEqualTo( "Fulano" );
+        assertThat(savedBook.getId()).isNotNull();
+        assertThat(savedBook.getIsbn()).isEqualTo("123");
+        assertThat(savedBook.getTitle()).isEqualTo("As aventuras");
+        assertThat(savedBook.getAuthor()).isEqualTo("Fulano");
 
     }
 
     @Test
-    @DisplayName( "Deve lançar erro de negocio ao tentar salvar um livro com isbn duplicado." )
+    @DisplayName("Deve lançar erro de negocio ao tentar salvar um livro com isbn duplicado.")
     public void shouldNotSaveABookWithDuplicatedISBN() {
         //cenario
         Book book = createValidBook();
-        Mockito.when( repository.existsByIsbn( Mockito.anyString() ) ).thenReturn( true );
+        Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
 
         //execucao
-        Throwable exception = Assertions.catchThrowable( () -> service.save( book ) );
-        assertThat( exception )
-                .isInstanceOf( BusinessException.class )
-                .hasMessage( "Isbn já cadastrado." );
+        Throwable exception = Assertions.catchThrowable(() -> service.save(book));
+        assertThat(exception)
+                .isInstanceOf(BusinessException.class)
+                .hasMessage("Isbn já cadastrado.");
 
-        Mockito.verify( repository, Mockito.never() ).save( book );
+        Mockito.verify(repository, Mockito.never()).save(book);
     }
 
     private Book createValidBook() {
         return Book.builder()
-                .isbn( "123" )
-                .author( "Fulano" )
-                .title( "As aventuras" )
+                .isbn("123")
+                .author("Fulano")
+                .title("As aventuras")
                 .build();
     }
 }
